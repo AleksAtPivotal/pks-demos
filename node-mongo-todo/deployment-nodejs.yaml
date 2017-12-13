@@ -1,0 +1,27 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: node-todo
+  name: node-todo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      run: node-todo
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: node-todo
+    spec:
+      containers:
+      - image: quay.io/alekssaul/node-todo:v0.2
+        imagePullPolicy: IfNotPresent
+        name: node-todo
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 5
