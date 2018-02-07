@@ -20,8 +20,8 @@ spec:
         run: node-todo
     spec:
       containers:
-      - image: quay.io/alekssaul/node-todo:v0.2
-        imagePullPolicy: IfNotPresent
+      - image: quay.io/alekssaul/node-todo:v0.2.1
+        imagePullPolicy: Always
         name: node-todo
       restartPolicy: Always
       terminationGracePeriodSeconds: 5
