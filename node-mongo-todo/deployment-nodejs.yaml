@@ -23,5 +23,7 @@ spec:
       - image: quay.io/alekssaul/node-todo:v0.2.1
         imagePullPolicy: Always
         name: node-todo
+        ports:
+          - containerPort: 8080
       restartPolicy: Always
       terminationGracePeriodSeconds: 5
