@@ -1,0 +1,7 @@
+package: github.com/alekssaul/pks-demos/ingress/default-backend
+import:
+- package: github.com/prometheus/client_golang
+  version: ~0.9.0-pre1
+  subpackages:
+  - prometheus
+  - prometheus/promhttp
