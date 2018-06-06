@@ -1,0 +1,14 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: wordpress-volumeclaim
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteMany
+  selector:
+    matchLabels:
+      nfs: "primary"
+  resources:
+    requests:
+      storage: 1Gi
