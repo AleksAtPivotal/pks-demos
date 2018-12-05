@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: priveledgedpod
+spec:
+  template:
+    metadata:
+      labels:
+        name: priveledgedpod
+    spec:
+      containers:
+        - name:  pause
+          image: k8s.gcr.io/pause
+          securityContext:
+            privileged: true

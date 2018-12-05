@@ -1,0 +1,11 @@
+## Priveldge allowed is used cluster wide
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: psp:priveledged
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs:     ['use']
+  # resourceName maps to the PSP object
+  resourceNames: ["privileged"]

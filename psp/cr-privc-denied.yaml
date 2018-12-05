@@ -1,0 +1,12 @@
+## Priveldge Denied is used cluster wide
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: psp:default-restricted
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs:     ['use']
+  # resourceName maps to the PSP object
+  resourceNames:
+  - restricted
