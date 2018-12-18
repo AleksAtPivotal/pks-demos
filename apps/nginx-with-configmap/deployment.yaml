@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: 
+  labels:
+    run: nginx-static
+  name: nginx-static
+spec:
+  selector:
+    matchLabels:
+      run: nginx-static
+  template:
+    metadata:
+      labels:
+        run: nginx-static
+    spec:
+      containers:
+      - image: nginx
+        name: nginx-static
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: appconfig
+      volumes:
+      - configMap:
+          defaultMode: 511
+          name: appconfig
+        name: appconfig
