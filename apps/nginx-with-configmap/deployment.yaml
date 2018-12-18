@@ -21,6 +21,6 @@ spec:
           name: appconfig
       volumes:
       - configMap:
-          defaultMode: 511
+          defaultMode: 0666
           name: appconfig
         name: appconfig
