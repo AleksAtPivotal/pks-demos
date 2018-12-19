@@ -1,4 +1,6 @@
 #!/bin/sh 
+## This script is meant to get Opsman Creds, however broken currently
+
 source ~/.profiles/opsman.sh $1
 product=$1
 
