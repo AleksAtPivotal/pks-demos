@@ -16,4 +16,3 @@ Various PKS demo assets used by @alekssaul.
 ├── psp           # PodSecurityPolicy guide for PKS
 └── scripts       # Scripts and hacks
 ```
-

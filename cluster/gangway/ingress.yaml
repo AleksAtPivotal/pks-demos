@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gangway
+  namespace: gangway
+spec:
+  rules:
+  - host: gangway.apps.pksvsphere01.lab.alekssaul.com	# ingress route goes here
+    http:
+      paths:
+      - backend:
+          serviceName: gangwaysvc
+          servicePort: 80
+
