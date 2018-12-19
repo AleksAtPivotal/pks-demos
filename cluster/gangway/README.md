@@ -12,7 +12,8 @@ Retrieve the PKS API Sertificate. You can either copy the field `Certificate to 
 
 ```sh
 export PKSAPI=pksapi.lab.alekssaul.com:8443
-ex +'/BEGIN CERTIFICATE/,/END CERTIFICATE/p' <(echo |\                                        openssl s_client -showcerts -connect $PKSAPI) -scq > file.crt
+ex +'/BEGIN CERTIFICATE/,/END CERTIFICATE/p' <(echo |\
+  openssl s_client -showcerts -connect $PKSAPI) -scq > file.crt
 ```
 
 which will retrieve the certificate from PKS API and write it to `file.crt`.
