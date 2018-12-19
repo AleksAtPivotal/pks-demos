@@ -1,0 +1,10 @@
+apiVersion: apps.pivotal.io/v1beta1
+kind: Sink
+metadata:
+  name: ingress-controller
+  namespace: kube-system
+spec:
+  type: syslog
+  host: vrloginsight.lab.alekssaul.com
+  port: 514
+  enable_tls: false
