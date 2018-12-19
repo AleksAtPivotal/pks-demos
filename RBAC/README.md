@@ -1,8 +1,6 @@
-# Kubernetes RBAC 
+# Kubernetes RBAC
 
 Document covers a sample setup for granting access to users within a kubernetes cluster.
-
-
 
 ## Workflow
 
@@ -12,14 +10,16 @@ Document covers a sample setup for granting access to users within a kubernetes 
 1. Generate kubeconfig files for the User(s)
 1. Validate
 
-
 ### Create a new namespace
 
 We will use Kubernetes namespaces to group/limit access for particular user(s). Namespaces can be individually setup with Access controls and quotas
 
 Create a new namespace
+
 ```sh
 $ kubectl create namespace example
+namespace/example created
+
 ```
 
 ### Create service accounts
@@ -36,6 +36,7 @@ metadata:
 ```
 
 Create example-user01 and other users as necessary
+
 ```sh
 $ kubectl --namespace example create -f sa-example-user01.yaml
 serviceaccount "example-user01" created
@@ -56,17 +57,19 @@ subjects:
     namespace: example
 roleRef:
   kind: ClusterRole
-  name: view 
+  name: view
   apiGroup: rbac.authorization.k8s.io
 ```
 
 Create the ClusterRoleBinding object
+
 ```sh
 $ kubectl --namespace example create -f crb-example-users.yaml
 clusterrolebinding.rbac.authorization.k8s.io "example-users" created
 ```
 
 Create `Role` for administrating all objects within the namespace `example`. Create `role-namespace-admin.yaml` file with below content.
+
 ```yaml
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
@@ -79,12 +82,14 @@ rules:
 ```
 
 Create the namespace-admin Role
+
 ```sh
 $ kubectl --namespace example create -f role-namespace-admin.yaml
 role.rbac.authorization.k8s.io "namespace-admin" created
 ```
 
 Bind the serviceaccounts to the Role. Create `rb-example-admin.yaml` file with below content.
+
 ```yaml
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -100,6 +105,7 @@ roleRef:
 ```
 
 Create the example-admin role binding in example namespace
+
 ```sh
 $ kubectl --namespace example create -f rb-example-admin.yaml
 rolebinding.rbac.authorization.k8s.io "example-admin" created
@@ -112,14 +118,15 @@ Now that we have the users setup and access granted, we'll want to generate kube
 User `create-kubeconfig.sh` to generate a kubeconfig file for the user.
 
 ```sh
-$ ./create-kubeconfig.sh example-user01 -n example > example-user01.config
+./create-kubeconfig.sh example-user01 -n example > example-user01.config
 ```
 
 ### Validate
 
 Change the kubectl context to example01 user
+
 ```sh
-$ export KUBECONFIG=$PWD/example-user01.config
+export KUBECONFIG=$PWD/example-user01.config
 ```
 
 One of the limitations of the "view" only role is that, we can't access `Secret` objects cluster-wide.
@@ -130,6 +137,7 @@ Error from server (Forbidden): secrets is forbidden: User "system:serviceaccount
 ```
 
 However this works within the namespace
+
 ```sh
 $ kubectl --namespace example get secrets
 NAME                         TYPE                                  DATA      AGE
@@ -138,6 +146,7 @@ example-user01-token-j5nrb   kubernetes.io/service-account-token   3         51m
 ```
 
 Similarly we can create/view/delete objects within our namespace
+
 ```sh
 $ kubectl --namespace example run nginx --image=nginx --replicas=1
 deployment.apps "nginx" created

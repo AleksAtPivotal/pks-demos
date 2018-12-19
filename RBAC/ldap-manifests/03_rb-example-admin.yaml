@@ -1,0 +1,12 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ns-admins
+  namespace: namespace02
+subjects:
+  - kind: Group
+    name: pks_cluster01_namespace02
+roleRef:
+  kind: Role
+  name: ns-admin
+  apiGroup: rbac.authorization.k8s.io
