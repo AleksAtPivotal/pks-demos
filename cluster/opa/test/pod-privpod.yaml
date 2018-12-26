@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-opa-podsecurity
+  annotations:
+    #opa-allowPrivileged: "true"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: security-context-demo
+  namespace: test-opa-podsecurity
+spec:
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 2000
+  volumes:
+  - name: sec-ctx-vol
+    emptyDir: {}
+  containers:
+  - name: sec-ctx-demo
+    image: gcr.io/google-samples/node-hello:1.0
+    volumeMounts:
+    - name: sec-ctx-vol
+      mountPath: /data/demo
+    securityContext:
+      privileged: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: securitycontext-deployment
+  name: securitycontext-deployment
+  namespace: test-opa-podsecurity
+spec:
+  selector:
+    matchLabels:
+      app: securitycontext-deployment
+  template:
+    metadata:
+      labels:
+        app: securitycontext-deployment
+    spec:
+      containers:
+      - image: gcr.io/google-samples/node-hello:1.0
+        name: securitycontext-deployment
+        securityContext:
+          privileged: true
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  labels:
+    app: securitycontext-replicaset
+  name: securitycontext-replicaset
+  namespace: test-opa-podsecurity
+spec:
+  selector:
+    matchLabels:
+      app: securitycontext-replicaset
+  template:
+    metadata:
+      labels:
+        app: securitycontext-replicaset
+    spec:
+      containers:
+      - image: gcr.io/google-samples/node-hello:1.0
+        name: securitycontext-replicaset
+        securityContext:
+          privileged: false

@@ -85,7 +85,7 @@ kubectl delete namespace test-opa-registry
 
 ## Test Pod allowPrivilegeEscalation policy
 
-Pod Priveledge Escalation policy (./policies/pod-priveledgeescalation.rego) denies creation of Pod's with container Spec.SecurityContext `allowPrivilegeEscalation: true` if the namespace is not annotate by  `opa-allowPrivilegeEscalation: "true"`.
+Pod Priviledge Escalation policy (./policies/pod-priveledgeescalation.rego) denies creation of Pod's with container Spec.SecurityContext `allowPrivilegeEscalation: true` if the namespace is not annotate by  `opa-allowPrivilegeEscalation: "true"`.
 
 Execute the Pod Securuty Escalation YAML to create the appropiate namespace and Deployment, ReplicaSet, Pod objects
 
@@ -129,6 +129,58 @@ replicaset.apps/securitycontext-replicaset created
 ```
 
 Remember to remove the namespace
+
+```sh
+kubectl delete namespace test-opa-podsecurity
+```
+
+## Test Pod Priviledged policy
+
+Pod Priveledge Escalation policy (./policies/pod-priveledgeescalation.rego) denies creation of Pod's with container Spec.SecurityContext `Privileged: true` if the namespace is not annotate by  `opa-allowPrivileged: "true"`.
+
+Execute the Pod Priviledged YAML to create the appropiate namespace and Deployment, ReplicaSet, Pod objects.
+
+```sh
+kubectl create -f ./test/pod-privpod.yaml
+```
+
+You should get a response stating that Namespace and replicaset objects were created however other objects are not allowed. This is because the ReplicaSet is set to `privileged: false` whereas Deployment and Pod objects use `privileged: true`.
+
+```text
+namespace/test-opa-podsecurity created
+replicaset.apps/securitycontext-replicaset created
+Error from server (Priviledged Pods are not allowed for the namespace: "test-opa-podsecurity"): error when creating "./test/pod-privpod.yaml": admission webhook "validating-webhook.openpolicyagent.org" denied the request: Priviledged Pods are not allowed for the namespace: "test-opa-podsecurity"
+Error from server (Priviledged Pods are not allowed for the namespace: "test-opa-podsecurity"): error when creating "./test/pod-privpod.yaml": admission webhook "validating-webhook.openpolicyagent.org" denied the request: Priviledged Pods are not allowed for the namespace: "test-opa-podsecurity"
+```
+
+Let's clean up the namespace and re-create the objects using the namespace with correct annotations from the "pod-privpod-allowed.yaml" file. Notice the difference between the two files:
+
+```sh
+diff ./test/pod-privpod-allowed.yaml ./test/pod-privpod.yaml
+6c6
+<     opa-allowPrivileged: "true"
+---
+>     #opa-allowPrivileged: "true"
+```
+
+Cleanup the namespace and re-create the objects;
+
+```sh
+kubectl delete namespace test-opa-podsecurity
+kubectl create -f ./test/pod-privpod-allowed.yaml
+```
+
+You should notice that all the objects have been created successfully.
+
+```text
+namespace/test-opa-podsecurity created
+pod/security-context-demo created
+deployment.apps/securitycontext-deployment created
+replicaset.apps/securitycontext-replicaset created
+```
+
+Remember to remove the namespace
+
 ```sh
 kubectl delete namespace test-opa-podsecurity
 ```
