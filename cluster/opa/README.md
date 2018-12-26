@@ -63,7 +63,7 @@ kubectl delete namespace test-opa
 
 ## Test Restrict Registry Policy
 
-Restrict Registry policy (./policies/restrict-registry.rego) enabled the OpenPolicyAgent to deny creation of Deployment and Replicasets if the image registry is not explicitly specified in the policy. This policy can help platform operators to restrict use of Public registries such as dockerhub, gcr.io etc. As an example policy in this repository only allows images to be deployed from "Quay.io".
+Restrict Registry policy (./policies/restrict-registry.rego) enabled the OpenPolicyAgent to deny creation of Deployment and Replicasets if the image registry is not explicitly specified in the policy. This policy can help platform operators to restrict use of Public registries such as dockerhub, gcr.io etc. As an example policy in this repository only allows images to be deployed from "Quay.io" and "gcr.io".
 
 ```sh
 kubectl create -f ./test/registry.yaml
@@ -81,4 +81,54 @@ Delete the namespace once completed
 
 ```sh
 kubectl delete namespace test-opa-registry
+```
+
+## Test Pod allowPrivilegeEscalation policy
+
+Pod Priveledge Escalation policy (./policies/pod-priveledgeescalation.rego) denies creation of Pod's with container Spec.SecurityContext `allowPrivilegeEscalation: true` if the namespace is not annotate by  `opa-allowPrivilegeEscalation: "true"`.
+
+Execute the Pod Securuty Escalation YAML to create the appropiate namespace and Deployment, ReplicaSet, Pod objects
+
+```sh
+kubectl create -f ./test/pod-securityescalation.yaml
+```
+
+You should get a response stating that Namespace and replicaset objects were created however other objects are not allowed. This is because the ReplicaSet is set to `allowPrivilegeEscalation: false` whereas Deployment and Pod objects use `allowPrivilegeEscalation: true`.
+
+```text
+namespace/test-opa-podsecurity created
+replicaset.apps/securitycontext-replicaset created
+Error from server (allowPrivilegeEscalation is not allowed for the namespace: "test-opa-podsecurity"): error when creating "./test/pod-securityescalation.yaml": admission webhook "validating-webhook.openpolicyagent.org" denied the request: allowPrivilegeEscalation is not allowed for the namespace: "test-opa-podsecurity"
+Error from server (allowPrivilegeEscalation is not allowed for the namespace: "test-opa-podsecurity"): error when creating "./test/pod-securityescalation.yaml": admission webhook "validating-webhook.openpolicyagent.org" denied the request: allowPrivilegeEscalation is not allowed for the namespace: "test-opa-podsecurity"
+```
+
+Let's clean up the namespace and re-create the objects using the namespace with correct annotations from the "pod-securityescalation-allowed.yaml" file. Notice the difference between the two files:
+
+```sh
+diff ./test/pod-securityescalation.yaml ./test/pod-securityescalation-allowed.yaml
+6c6
+<     #opa-allowPrivilegeEscalation: "true"
+---
+>     opa-allowPrivilegeEscalation: "true"
+```
+
+Cleanup the namespace and re-create the objects;
+
+```sh
+kubectl delete namespace test-opa-podsecurity
+kubectl create -f ./test/pod-securityescalation-allowed.yaml
+```
+
+You should notice that all the objects have been created successfully.
+
+```text
+namespace/test-opa-podsecurity created
+pod/security-context-demo created
+deployment.apps/securitycontext-deployment created
+replicaset.apps/securitycontext-replicaset created
+```
+
+Remember to remove the namespace
+```sh
+kubectl delete namespace test-opa-podsecurity
 ```

@@ -96,6 +96,7 @@ spec:
             - "--replicate=apps/v1/deployments"
             - "--replicate=apps/v1/replicasets"
             - "--replicate-cluster=v1/namespaces"
+            - "--replicate-cluster=v1/Pods"
             - "--replicate=extensions/v1beta1/ingresses"
       volumes:
         - name: opa-server

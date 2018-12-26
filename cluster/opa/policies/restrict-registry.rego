@@ -25,7 +25,7 @@ deny[msg] {
 }
 
 valid_deployment_registries = {registry |
-        whitelist = "quay.io"
+        whitelist = "quay.io,gcr.io"
         registries = split(whitelist, ",")
         registry = registries[_]
 }
